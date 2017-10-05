@@ -3,25 +3,105 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <style>
+      div {color: darkblue;
+        text-align: center;
+        }
+      h1 {color: blue;
+        text-align: center;
+    }
+    /*
+      div {color: darkblue;
+        text-align: center;
+        background-color: rgb(0, 132, 180)}
+      h1 {color: blue;
+      text-align: center;
+      background-color: rgb(0, 132, 180)
+    }
+      span {
+        font-weight: bold;
+      } 
+      */
+    </style>
+    <link rel="stylesheet" type="text/css" href="styles.css">
   </head>
   <body>
     <script>
-
       $(document).ready(function(){
+
         var $body = $('body');
         $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+        var $title = $('<h1></h1>');
+        $title.text('Twittler');
+        $title.prependTo($body);
 
+        var $timeline = $('<div></div>');
+        $timeline.addClass('timeline');
+        $timeline.appendTo($body);
+
+
+        $('<button class = refresh>Refresh Tweets</button>').appendTo($timeline);
+        $('.refresh').on('click', function(){
+          $('.timeline > div').remove();
+          index = streams.home.length - 1;
+          addTweets();
+        });
+
+        
+        function addTweets() {
+          var index = streams.home.length - 1;
+
+          while(index >= 0){
+            var tweet = streams.home[index];
+            var $tweet = $('<div></div>');
+            var $username = $('<span></span>');
+            var $message = $('<p></p>');
+            var $empty = $('<h4></h4>');
+
+            $tweet.addClass(tweet.user);
+            $tweet.appendTo($timeline);
+            $username.text('@' + tweet.user + ':');
+            $username.addClass('name');
+            $username.appendTo($tweet);
+            $message.text(tweet.created_at.toLocaleString() + ' - ' +  tweet.message);
+            $message.addClass('message')
+            $message.appendTo($tweet)
+                      
+            index -= 1;
+          }
+
+          $('.name').on('click', function(){
+             var username = $(this).closest('div').attr('class');
+            $('.timeline > div').remove();
+            userTimelineLength = streams.users[username].length - 1;
+            addUserTimeline(username);
+          });
+        };
+        addTweets();
+
+        function addUserTimeline(user){
+          var userTimelineLength = streams.users[user].length - 1;
+          while(userTimelineLength >= 0){
+            var usertweet = streams.users[user][userTimelineLength];
+            var $tweet = $('<div></div>');
+            var $username = $('<span></span>');
+            var $message = $('<p></p>');
+            var $empty = $('<h4></h4>');
+
+            $tweet.addClass(usertweet.user);
+            $tweet.appendTo($timeline);
+            $username.text('@' + usertweet.user + ':');
+            $username.addClass('name');
+            $username.appendTo($tweet);
+            $message.text(usertweet.created_at.toLocaleString() + ' - ' +  usertweet.message);
+            $message.addClass('message')
+            $message.appendTo($tweet)
+
+            userTimelineLength -= 1;
+          }
+        };
       });
-
     </script>
   </body>
 </html>
